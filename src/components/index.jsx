@@ -32,34 +32,37 @@ function Profile() {
         }
       }`;
 
-      try {
-        const response = await fetch(graphqlEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${bearerToken}`
-          },
-          body: JSON.stringify({
-            query: graphqlQuery,
-          }),
-        });
 
-        const data = await response.json();
-        setUserData(data);
-        console.log('Data from API:', data);
-      } catch (error) {
-        console.error('GraphQL Error:', error);
-      }
+  try {
+    const response = await fetch(graphqlEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        query: graphqlQuery,
+      }),
+    });
+
+    const { data } = await response.json();
+
+    // Check if 'me' property exists in the expected structure
+    if (data && data.me) {
+      setUserData(data.me);
+    } else {
+      console.error('Invalid data structure:', data);
+    }
+  } catch (error) {
+    console.error('GraphQL Error:', error);
+  }
     };
 
     checkLoginStatus();
   }, []);
-  // Log userData, profile, and username for debugging purposes
-  console.log('userData:', userData);
-  const profile = userData?.me || null;
-  console.log('profile:', profile);
-  const username = profile?.username || null;
-  console.log('username:', username);
+
+  const username = userData?.username || null;
+
 
 
 
