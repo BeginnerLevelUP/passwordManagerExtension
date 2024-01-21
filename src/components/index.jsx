@@ -1,11 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 
 function Profile() {
-  const [userData, setUserData] = useState(null);
-    useEffect(() => {
-    const checkLoginStatus = async () => {
-      const bearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImVtYWlsIjoid2FkZUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImpvaG5XYWRlIiwiX2lkIjoiNjVhYzZhMWJjZTZhNTIzZmYwY2FhODRkIn0sImlhdCI6MTcwNTgwNzgxOCwiZXhwIjoxNzA1ODE1MDE4fQ.oDp0COQsi_KvnEKzAi9v-YpvyJhClHwlpLfUVSCC8Xg';  // Replace with your actual token
-      const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql';
+        const checkLoginStatus = async (bearerKey) => {
+      const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql'; // Replace with your GraphQL endpoint
+
       const graphqlQuery = `query Me {
         me {
           _id
@@ -32,39 +31,62 @@ function Profile() {
         }
       }`;
 
+      try {
+        const response = await fetch(graphqlEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${bearerKey}`
+          },
+          body: JSON.stringify({
+            query: graphqlQuery,
+          }),
+        });
 
-  try {
-    const response = await fetch(graphqlEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${bearerToken}`
-      },
-      body: JSON.stringify({
-        query: graphqlQuery,
-      }),
-    });
+        const { data } = await response.json();
 
-    const { data } = await response.json();
-
-    // Check if 'me' property exists in the expected structure
-    if (data && data.me) {
-      setUserData(data.me);
-    } else {
-      console.error('Invalid data structure:', data);
-    }
-  } catch (error) {
-    console.error('GraphQL Error:', error);
-  }
+        // Check if 'me' property exists in the expected structure
+        if (data && data.me) {
+          setUserData(data.me);
+        } else {
+          console.error('Invalid data structure:', data);
+        }
+      } catch (error) {
+        console.error('GraphQL Error:', error);
+      }
     };
-
-    checkLoginStatus();
-  }, []);
+  const [userData, setUserData] = useState(null);
+  const [bearerKey,setBearer]=useState(null)
+  useEffect(() => {
+     chrome.runtime.onMessage.addListener((message) => {
+      if (message.token) {
+        console.log(message.token)
+        setBearer(message.token);
+        checkLoginStatus(message.token);
+      }
+    });
+},[]) 
 
   const username = userData?.username || null;
 
+  const onClickLogin = async () => {
+    const deployedSite = await chrome.tabs.query({ url: 'https://passwordmanager-zep7.onrender.com/*' })
+    const page = deployedSite[0];
+    if (page) {
+      console.log('Page already open', page);
+      chrome.tabs.update(page.id, { active: true });
+chrome.scripting.executeScript({
+  target: { tabId: page.id },     
+  files : [ "content.js" ],
 
-
+});
+    } else {
+      console.log('Opening New Page');
+      chrome.tabs.create({
+        url: 'https://passwordmanager-zep7.onrender.com/',
+      });
+    }
+  };
 
 
   return (
@@ -72,7 +94,7 @@ function Profile() {
       {!userData ? (
         <>
           <h1>Must Be Logged In</h1>
-          <a href='https://passwordmanager-zep7.onrender.com/' target="_blank" rel="noopener noreferrer">
+          <a onClick={onClickLogin} target="_blank" rel="noopener noreferrer">
             Link to website
           </a>
         </>
