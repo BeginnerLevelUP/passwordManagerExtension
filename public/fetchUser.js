@@ -2,12 +2,14 @@ export const getBearerKey = async () => {
   const deployedSite = await chrome.tabs.query({ url: 'https://passwordmanager-zep7.onrender.com/*' });
   const page = deployedSite[0];
   if (page) {
-    console.log('Page already open', page);
 chrome.scripting.executeScript({
   target: { tabId: page.id },
   function: () => {
+     setInterval(()=>{
     const token = localStorage.getItem('id_token');
     chrome.storage.local.set({ bearerKey: token });
+     },1000)
+
   },
 });
 
