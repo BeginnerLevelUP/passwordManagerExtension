@@ -22,15 +22,21 @@ const accounts=profile?.accounts||null
   return (
     <div>
 
-      {currentUser?(
+      {profile?(
         <>
-        <h1>Hello {username}</h1>
-        {
+      <h1>Hello
+<a href='https://passwordmanager-zep7.onrender.com/me' target="_blank">
+ {username}
+        </a>
+        </h1>
+
+
+        {accounts&&
           accounts.map((account)=>(
             <>
 
  <Dropdown as={ButtonGroup}>
-      <Button  href={account.websiteUrl} variant="success">{account.username}</Button>
+      <Button target="_blank" href={account.websiteUrl} variant="success">{account.username}</Button>
 
       <Dropdown.Toggle split variant="success" id="dropdown-split-basic" />
 
@@ -49,7 +55,11 @@ const accounts=profile?.accounts||null
         }
         </>
       ):(
-        <h1>Must Login In</h1>
+        <h1>
+          <a href='https://passwordmanager-zep7.onrender.com/' target="_blank">
+          Must Login In
+          </a>
+          </h1>
       )
       
       }

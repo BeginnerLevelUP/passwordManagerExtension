@@ -13,12 +13,7 @@ chrome.scripting.executeScript({
   },
 });
 
-  } else {
-    console.log('Opening New Page');
-    chrome.tabs.create({
-      url: 'https://passwordmanager-zep7.onrender.com/',
-    });
-  }
+  } 
 };
 
 
