@@ -43,7 +43,6 @@
 
         const { data } = await response.json();
         chrome.storage.local.set({user:data})
-        console.log(data)
       } catch (error) {
         console.error('GraphQL Error:', error);
       }
