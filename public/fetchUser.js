@@ -1,5 +1,6 @@
  const checkLoginStatus = async () => {
-      const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql'; // Replace with your GraphQL endpoint
+      const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql';
+
       const bearerKey=
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImVtYWlsIjoid2FkZUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImpvaG5XYWRlIiwiX2lkIjoiNjVhYzZhMWJjZTZhNTIzZmYwY2FhODRkIn0sImlhdCI6MTcwNTkzMzc5NCwiZXhwIjoxNzA1OTQwOTk0fQ.XN78tmjTw1dbcLTGtYloTGl5xZaiMhzk_6IRqGDjaLg"
       const graphqlQuery = `query Me {
