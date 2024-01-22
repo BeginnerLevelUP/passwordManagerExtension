@@ -1,8 +1,28 @@
- const checkLoginStatus = async () => {
-      const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql';
+export const getBearerKey = async () => {
+  const deployedSite = await chrome.tabs.query({ url: 'https://passwordmanager-zep7.onrender.com/*' });
+  const page = deployedSite[0];
+  if (page) {
+    console.log('Page already open', page);
+chrome.scripting.executeScript({
+  target: { tabId: page.id },
+  function: () => {
+    const token = localStorage.getItem('id_token');
+    chrome.storage.local.set({ bearerKey: token });
+  },
+});
 
-      const bearerKey=
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImVtYWlsIjoid2FkZUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImpvaG5XYWRlIiwiX2lkIjoiNjVhYzZhMWJjZTZhNTIzZmYwY2FhODRkIn0sImlhdCI6MTcwNTkzMzc5NCwiZXhwIjoxNzA1OTQwOTk0fQ.XN78tmjTw1dbcLTGtYloTGl5xZaiMhzk_6IRqGDjaLg"
+  } else {
+    console.log('Opening New Page');
+    chrome.tabs.create({
+      url: 'https://passwordmanager-zep7.onrender.com/',
+    });
+  }
+};
+
+
+export const checkLoginStatus = async (bearerKey) => {
+
+      const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql';
       const graphqlQuery = `query Me {
         me {
           _id
@@ -47,5 +67,3 @@
         console.error('GraphQL Error:', error);
       }
     }
-
-    export default checkLoginStatus
