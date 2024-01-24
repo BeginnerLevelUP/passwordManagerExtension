@@ -19,6 +19,11 @@ function App() {
 const profile=currentUser?.me||null
 const username=profile?.username||null
 const accounts=profile?.accounts||null
+const accountUrls = accounts ? accounts.map(url => url.websiteUrl) : [];
+chrome.storage.local.set({accountUrls:accountUrls})
+
+
+
   return (
     <div>
 
