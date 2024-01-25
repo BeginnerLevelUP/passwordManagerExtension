@@ -5,7 +5,7 @@ export const checkAccounts = async () => {
             const page = accountUrl[0];
             if (page) {
                 if (page.active) {
-                  chrome.storage.local.set({ activeUrl: page });
+                  chrome.storage.local.set({ activeUrl: url });
                 }
             } else {
             }
