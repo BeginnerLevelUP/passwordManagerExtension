@@ -6,21 +6,24 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { useState,useEffect} from 'react';
 function App() {
   const [currentUser,setUser]=useState(null)
-  useEffect(
-()=>{
-    chrome.storage.local.get(['user'],(result)=>{
-    const {user}=result
-    if(user){ 
-      setUser(user)
+useEffect(() => {
+  chrome.storage.local.get(['user',], (result) => {
+    const { user } = result;
+
+    if (user) {
+      setUser(user);
     }
-  })
-},[currentUser]
-  )
+
+  });
+}, [currentUser]);
+
 const profile=currentUser?.me||null
 const username=profile?.username||null
 const accounts=profile?.accounts||null
 const accountUrls = accounts ? accounts.map(url => url.websiteUrl) : [];
 chrome.storage.local.set({accountUrls:accountUrls})
+
+
 
 
 

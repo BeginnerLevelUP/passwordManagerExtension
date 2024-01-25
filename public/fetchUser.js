@@ -9,7 +9,6 @@ chrome.scripting.executeScript({
     const token = localStorage.getItem('id_token');
     chrome.storage.local.set({ bearerKey: token });
      },1000)
-
   },
 });
 
