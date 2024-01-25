@@ -15,7 +15,6 @@ chrome.runtime.onInstalled.addListener(details => {
     chrome.storage.local.get(['activeUrl'], (result) => {
       const { activeUrl } = result;
       if (activeUrl) {
-        console.log(activeUrl);
 
         chrome.tabs.query({ url: activeUrl }, (tabs) => {
           // Check if there's at least one tab that matches the URL
@@ -41,14 +40,26 @@ chrome.runtime.onInstalled.addListener(details => {
                 }
               },
             });
-          } else {
-            console.error('No matching tabs found.');
           }
         });
       }
     });
 
   }, 1000);
+
+chrome.tabs.onCreated.addListener((tab) => {
+  if (tab.active) {
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      function: () => {
+   const forms = document.querySelector('form input[type="password"]') || document.querySelector('div input[type="password"]');
+   if(forms){
+     console.log('form detectede twin')
+   }
+      },
+    });
+  }
 });
 
+});
 
