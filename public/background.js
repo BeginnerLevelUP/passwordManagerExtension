@@ -45,21 +45,26 @@ chrome.runtime.onInstalled.addListener(details => {
       }
     });
 
+ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const activeTab = tabs[0];
+    if (activeTab ) {
+      chrome.scripting.executeScript({
+        target: { tabId: activeTab.id },
+        function: () => {
+          const forms = document.querySelector('form input[type="password"]') || document.querySelector('div input[type="password"]');
+          if (forms) {
+            console.log('Form with password input detected in the active tab.');
+          }else{
+               console.log('none')
+          }
+        },
+      });
+    }})
+
   }, 1000);
 
-chrome.tabs.onCreated.addListener((tab) => {
-  if (tab.active) {
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      function: () => {
-   const forms = document.querySelector('form input[type="password"]') || document.querySelector('div input[type="password"]');
-   if(forms){
-     console.log('form detectede twin')
-   }
-      },
-    });
-  }
+ 
 });
 
-});
 
+//    const forms = document.querySelector('form input[type="password"]') || document.querySelector('div input[type="password"]');
