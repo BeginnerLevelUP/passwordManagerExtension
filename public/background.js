@@ -23,21 +23,29 @@ chrome.runtime.onInstalled.addListener(details => {
             chrome.scripting.executeScript({
               target: { tabId: url.id },
               function: () => {
-                // Create a button with a unique ID and insert it into the page
+                   chrome.storage.local.get(['activeAccount'], (result) => {
+                          const { activeAccount } = result;
+                                    // Create a button with a unique ID and insert it into the page
                 const uniqueButtonId = 'myUniqueButton';
                 const existingButton = document.getElementById(uniqueButtonId);
+               const key = document.querySelector('form input[type="password"]') 
+               || document.querySelector('div input[type="password"]') 
+               || document.querySelector('div input[type="text]') 
+               || document.querySelector('form input[type="text"]');
 
                 if (!existingButton) {
                   const newButton = document.createElement('button');
                   newButton.id = uniqueButtonId;
-                  newButton.innerHTML = 'Click me!';
+                  newButton.textContent = 'Click me!';
                   document.body.appendChild(newButton);
 
                   newButton.addEventListener('click', () => {
-                    alert('Button clicked!');
-                    // Add your additional logic here
+
+    
                   });
                 }
+                   })
+
               },
             });
           }
@@ -53,9 +61,9 @@ chrome.runtime.onInstalled.addListener(details => {
         function: () => {
           const forms = document.querySelector('form input[type="password"]') || document.querySelector('div input[type="password"]');
           if (forms) {
-            console.log('Form with password input detected in the active tab.');
+          //   console.log('Form with password input detected in the active tab.');
           }else{
-               console.log('none')
+
           }
         },
       });
