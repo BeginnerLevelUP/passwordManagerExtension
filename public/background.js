@@ -1,5 +1,5 @@
 import { checkLoginStatus, getBearerKey } from "./fetchUser.js";
-import { checkAccounts } from "./checkAccounts.js";
+import { checkAccounts} from "./checkAccounts.js";
 
 chrome.runtime.onInstalled.addListener(details => {
   setInterval(() => {
@@ -12,11 +12,11 @@ chrome.runtime.onInstalled.addListener(details => {
 
     checkAccounts();
 
-    chrome.storage.local.get(['activeUrl'], (result) => {
-      const { activeUrl } = result;
-      if (activeUrl) {
+    chrome.storage.local.get(['activeAccount'], (result) => {
+      const { activeAccount } = result;
+      if (activeAccount) {
 
-        chrome.tabs.query({ url: activeUrl }, (tabs) => {
+        chrome.tabs.query({ url: activeAccount.websiteUrl }, (tabs) => {
           // Check if there's at least one tab that matches the URL
           if (tabs && tabs.length > 0) {
             const url = tabs[0];
