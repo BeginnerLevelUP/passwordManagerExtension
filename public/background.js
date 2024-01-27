@@ -12,63 +12,20 @@ chrome.runtime.onInstalled.addListener(details => {
 
     checkAccounts();
 
-    chrome.storage.local.get(['activeAccount'], (result) => {
+
+
+
+
+        chrome.storage.local.get(['activeAccount'], (result) => {
       const { activeAccount } = result;
-      if (activeAccount) {
-
-        chrome.tabs.query({ url: activeAccount.websiteUrl }, (tabs) => {
-          // Check if there's at least one tab that matches the URL
-          if (tabs && tabs.length > 0) {
-            const url = tabs[0];
-            chrome.scripting.executeScript({
-              target: { tabId: url.id },
-              function: () => {
-                   chrome.storage.local.get(['activeAccount'], (result) => {
-                          const { activeAccount } = result;
-
-                                    // Create a button with a unique ID and insert it into the page
-                const uniqueButtonId = 'myUniqueButton';
-                const existingButton = document.getElementById(uniqueButtonId);
-
-                  if (!existingButton) {
-                  const newButton = document.createElement('button');
-                  newButton.id = uniqueButtonId;
-                  newButton.textContent = 'Click me!';
-
-                  const input = Array.from(document.querySelectorAll('input'))
-                input.forEach((input)=>{
-                              document.body.appendChild(newButton);
-                    newButton.addEventListener('click', () => {
-                if(input.type==='text'){
-                    input.value=activeAccount.username
-                  }
-
-                  if(input.type==='password'){
-                      input.value=activeAccount.websiteUrl
-                  } 
-
-                  if( input.type==='email'){
-                    input.value=activeAccount.email
-                  }
-                      
-                  });
-  
-                })
-
-                }
-
-                   })
-
-              },
-            });
-          }
-        });
-      }
-    });
-
  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const activeTab = tabs[0];
-    if (activeTab ) {
+ if (
+      activeTab &&
+      activeTab.url !== activeAccount.websiteUrl &&
+      activeTab.url !== "https://passwordmanager-zep7.onrender.com/*"
+    ){
+          if (activeTab ) {
       chrome.scripting.executeScript({
         target: { tabId: activeTab.id },
         function: () => {
@@ -214,7 +171,56 @@ try {
               
         },
       });
-    }})
+    }
+    }else{
+                  const url = tabs[0];
+            chrome.scripting.executeScript({
+              target: { tabId: url.id },
+              function: () => {
+                   chrome.storage.local.get(['activeAccount'], (result) => {
+                          const { activeAccount } = result;
+
+                                    // Create a button with a unique ID and insert it into the page
+                const uniqueButtonId = 'myUniqueButton';
+                const existingButton = document.getElementById(uniqueButtonId);
+
+                  if (!existingButton) {
+                  const newButton = document.createElement('button');
+                  newButton.id = uniqueButtonId;
+                  newButton.textContent = 'Click me!';
+
+                  const input = Array.from(document.querySelectorAll('input'))
+                input.forEach((input)=>{
+                              document.body.appendChild(newButton);
+                    newButton.addEventListener('click', () => {
+                if(input.type==='text'){
+                    input.value=activeAccount.username
+                  }
+
+                  if(input.type==='password'){
+                      input.value=activeAccount.websiteUrl
+                  } 
+
+                  if( input.type==='email'){
+                    input.value=activeAccount.email
+                  }
+                      
+                  });
+  
+                })
+
+                }
+
+                   })
+
+              },
+            });
+    }
+
+  })
+
+  })
+
 
   }, 1000);
 
