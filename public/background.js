@@ -18,3 +18,4 @@ chrome.runtime.onInstalled.addListener(details => {
  
 });
 
+// Last thing that's left is to handle mulitple accouts of the same url
