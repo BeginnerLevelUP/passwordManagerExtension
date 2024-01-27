@@ -72,12 +72,146 @@ chrome.runtime.onInstalled.addListener(details => {
       chrome.scripting.executeScript({
         target: { tabId: activeTab.id },
         function: () => {
-          const forms = document.querySelector('form input[type="password"]') || document.querySelector('div input[type="password"]');
-          if (forms) {
-          //   console.log('Form with password input detected in the active tab.');
-          }else{
+    // Form
+       const form = document.createElement('form');
 
+
+    // Create input for username
+    const usernameInput = document.createElement('input');
+    usernameInput.type = 'text';
+    usernameInput.placeholder = 'Username';
+    
+    // Create input for email
+    const emailInput = document.createElement('input');
+    emailInput.type = 'email';
+    emailInput.placeholder = 'Email';
+
+    // Create input for password
+    const passwordInput = document.createElement('input');
+    passwordInput.type = 'password';
+    passwordInput.placeholder = 'Password';
+
+    // Create textarea
+    const textarea = document.createElement('textarea');
+    textarea.placeholder = 'Additional comments';
+
+    // Create submit button
+    const submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.textContent = 'Submit';
+
+    // Append all elements to the form
+    form.appendChild(usernameInput);
+    form.appendChild(emailInput);
+    form.appendChild(passwordInput);
+    form.appendChild(textarea);
+    form.appendChild(submitButton);
+
+  const uniqueButtonId = 'myUniqueButton';
+  const existingButton = document.getElementById(uniqueButtonId);
+
+  const input = Array.from(document.querySelectorAll('input'));
+
+  if (input.length > 0) {
+
+    if (!existingButton) {
+      const newButton = document.createElement('button');
+      newButton.id = uniqueButtonId;
+      newButton.textContent = 'Add Account';
+
+      document.body.appendChild(newButton);
+
+      newButton.addEventListener('click', () => {
+        input.forEach((inputElement) => {
+          if (inputElement.type === 'text') {
+            usernameInput.value= inputElement.value
           }
+
+          if (inputElement.type === 'password') {
+            passwordInput.value= inputElement.value
+          }
+
+          if (inputElement.type === 'email') {
+            emailInput.value= inputElement.value
+          }
+        });
+
+    document.body.appendChild(form);
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  // Collect input values into a newAccountObject
+  const variables = {
+    currentUsername:'johnWade',
+    websiteUrl: window.location.href,
+    username: usernameInput.value,
+    passwordText: passwordInput.value,
+    email: emailInput.value,
+    notes: textarea.value,
+  };
+
+
+  const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql';
+  const graphqlQuery =`
+  mutation Mutation($passwordText: String!, $currentUsername: String!, $username: String, $email: String, $websiteUrl: String, $notes: String) {
+  addNewAccount(passwordText: $passwordText, currentUsername: $currentUsername, username: $username, email: $email, websiteUrl: $websiteUrl, notes: $notes) {
+    _id
+    username
+    email
+    websiteUrl
+    notes
+    created
+    updated
+    password {
+      _id
+      text
+      length
+      uppercase
+      lowercase
+      number
+      specialCharacter
+    }
+  }
+}
+
+  `
+
+try {
+  const response = await fetch(graphqlEndpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: graphqlQuery,
+      variables: variables,
+    }),
+  });
+
+  console.log('Response Status:', response.status);
+
+  const responseBody = await response.json();
+  console.log('Response Body:', responseBody);
+
+  const { data, errors } = responseBody;
+
+  if (data) {
+    console.log('Data:', data);
+  } else if (errors) {
+    console.error('GraphQL Errors:', errors);
+  }
+} catch (error) {
+  console.error('Fetch Error:', error);
+}
+
+});
+
+      });
+    }
+  }
+                                             
+              
         },
       });
     }})
@@ -86,5 +220,4 @@ chrome.runtime.onInstalled.addListener(details => {
 
  
 });
-
 
