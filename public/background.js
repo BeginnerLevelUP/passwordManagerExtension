@@ -25,25 +25,38 @@ chrome.runtime.onInstalled.addListener(details => {
               function: () => {
                    chrome.storage.local.get(['activeAccount'], (result) => {
                           const { activeAccount } = result;
+
                                     // Create a button with a unique ID and insert it into the page
                 const uniqueButtonId = 'myUniqueButton';
                 const existingButton = document.getElementById(uniqueButtonId);
-               const key = document.querySelector('form input[type="password"]') 
-               || document.querySelector('div input[type="password"]') 
-               || document.querySelector('div input[type="text]') 
-               || document.querySelector('form input[type="text"]');
 
-                if (!existingButton) {
+                  if (!existingButton) {
                   const newButton = document.createElement('button');
                   newButton.id = uniqueButtonId;
                   newButton.textContent = 'Click me!';
-                  document.body.appendChild(newButton);
 
-                  newButton.addEventListener('click', () => {
+                  const input = Array.from(document.querySelectorAll('input'))
+                input.forEach((input)=>{
+                              document.body.appendChild(newButton);
+                    newButton.addEventListener('click', () => {
+                if(input.type==='text'){
+                    input.value=activeAccount.username
+                  }
 
-    
+                  if(input.type==='password'){
+                      input.value=activeAccount.websiteUrl
+                  } 
+
+                  if( input.type==='email'){
+                    input.value=activeAccount.email
+                  }
+                      
                   });
+  
+                })
+
                 }
+
                    })
 
               },
@@ -75,4 +88,3 @@ chrome.runtime.onInstalled.addListener(details => {
 });
 
 
-//    const forms = document.querySelector('form input[type="password"]') || document.querySelector('div input[type="password"]');
