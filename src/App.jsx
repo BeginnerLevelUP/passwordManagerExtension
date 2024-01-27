@@ -1,12 +1,20 @@
+
+// Imports
 import './App.css';
 import 'bulma/css/bulma.css'
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useState,useEffect} from 'react';
+
+// The Popup
 function App() {
+  // the js script that runs in the context of the popup
+  
+  // state to render user credentials 
   const [currentUser,setUser]=useState(null)
-useEffect(() => {
+  // Getting the user information from the background.js
+  useEffect(() => {
   chrome.storage.local.get(['user',], (result) => {
     const { user } = result;
 
@@ -15,17 +23,19 @@ useEffect(() => {
     }
 
   });
-}, [currentUser]);
+  }, [currentUser]);
 
+  // Getting data back from the object
 const profile=currentUser?.me||null
 const username=profile?.username||null
 const accounts=profile?.accounts||null
+// the logged in user accoutns is sent to chrome storage
 chrome.storage.local.set({accounts:accounts})
 
 
 
 
-
+// The HTML
   return (
     <div>
 
