@@ -52,10 +52,53 @@ export const handleAccounts=async()=>{
             chrome.scripting.executeScript({
               target: { tabId: url.id },
               function: () => {
-                // have to grab from local storage again becasue it is within a different context 
-                   chrome.storage.local.get(['activeAccount'], (result) => {
-                          const { activeAccount } = result;
+const fetchCurrentPassword = async (accountId) => {
+    const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql';
+    const graphqlQuery = `
+        mutation ShowExternalPassword($accountId: ID!) {
+            showExternalPassword(accountId: $accountId) {
+                _id
+                password {
+                    _id
+                    text
+                }
+            }
+        }
+    `;
 
+    try {
+        const response = await fetch(graphqlEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                query: graphqlQuery,
+                variables: {
+                    accountId,
+                },
+            }),
+        });
+
+        const { data, errors } = await response.json();
+
+        if (errors) {
+            console.error('GraphQL Errors:', errors);
+        }
+
+        console.log('GraphQL Data:', data);
+        return data.showExternalPassword.password.text;
+    } catch (error) {
+        console.error('GraphQL Error:', error);
+        return null;
+    }
+};
+
+                // have to grab from local storage again becasue it is within a different context 
+                   chrome.storage.local.get(['activeAccount'], async(result) => {
+                          const { activeAccount } = result;
+                         const password=await fetchCurrentPassword(activeAccount._id)
+                          console.log(password)
                                     // Create a button with a unique ID and insert it into the page
                 const uniqueButtonId = 'fillAccount';
                 const existingButton = document.getElementById(uniqueButtonId);
@@ -74,7 +117,7 @@ export const handleAccounts=async()=>{
                   }
 
                   if(input.type==='password'){
-                      input.value=activeAccount.websiteUrl
+                      input.value=password
                   } 
 
                   if( input.type==='email'){
@@ -94,9 +137,10 @@ export const handleAccounts=async()=>{
 
 }
  const handleNewAccounts=async(tabs)=>{
+           const url = tabs[0];
             //execute a script on the page
       chrome.scripting.executeScript({
-        target: { tabId: activeTab.id },
+        target: { tabId: url.id },
         function: () => {
             // created a form becasue i didnt find a away to open the pop up with js seems like the user has to manually click
     // Form
