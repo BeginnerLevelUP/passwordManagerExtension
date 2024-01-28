@@ -29,48 +29,58 @@ export const checkLoginStatus = async (bearerKey) => {
       const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql'; // link to the deplooyed site 
       // the query to get back information about the user
       const graphqlQuery = `query Me {
-        me {
-          _id
-          username
-          email
-          password {
-            _id
-            text
-            length
-            uppercase
-            lowercase
-            number
-            specialCharacter
-          }
-          accounts {
-            _id
-            username
-            email
-            websiteUrl
-            notes
-            created
-            updated
-          }
-        }
-      }`;
-
-      try {
-        const response = await fetch(graphqlEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${bearerKey}`
-          },
-          body: JSON.stringify({
-            query: graphqlQuery,
-          }),
-        });
-
-        const { data } = await response.json();
-        chrome.storage.local.set({user:data}) //store that data that is used in app.jsx
-      } catch (error) {
-        console.error('GraphQL Error:', error);
+  me {
+    _id
+    username
+    email
+    password {
+      _id
+      text
+      length
+      uppercase
+      lowercase
+      number
+      specialCharacter
+    }
+    accounts {
+      _id
+      username
+      email
+      websiteUrl
+      notes
+      created
+          updated
+            password{
+    _id
+    text
+    length
+    uppercase
+    lowercase
+    number
+    specialCharacter
       }
+    }
+  }
+}`;
+
+try {
+  const response = await fetch(graphqlEndpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${bearerKey}`
+    },
+    body: JSON.stringify({
+      query: graphqlQuery,
+    }),
+  });
+
+  const { data } = await response.json();
+  chrome.storage.local.set({ user: data }); // Store the data that is used in app.jsx
+} catch (error) {
+  console.error('GraphQL Error:', error);
+}
+
     }
 
 

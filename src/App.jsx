@@ -63,7 +63,7 @@ chrome.storage.local.set({accounts:accounts})
      <Dropdown.ItemText>Email : {account.email}</Dropdown.ItemText>
      <Dropdown.ItemText>Website Url: {account.websiteUrl}</Dropdown.ItemText>
      <Dropdown.ItemText>Notes: {account.notes}</Dropdown.ItemText>
-
+      <Dropdown.ItemText>Password {account.password.text.substring(0, 10)}....</Dropdown.ItemText>   
       </Dropdown.Menu>
     </Dropdown>
             </>
