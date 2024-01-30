@@ -34,7 +34,7 @@ export const handleAccounts=async()=>{
  if (
       activeTab &&
       activeTab.url !== activeAccount.websiteUrl &&
-      activeTab.url !== "https://passwordmanager-zep7.onrender.com/*"
+      activeTab.url !== "https://passwordmanager-zep7.onrender.com/"
     ){
         handleNewAccounts(tabs)
     }else{

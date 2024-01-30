@@ -13,10 +13,18 @@ chrome.scripting.executeScript({
   function: () => {
     //if the user is logged in their bearer token will be stored in the deployed site's local storage which can be acessed the
     // stored in chrome storage
-     setInterval(()=>{
-    const token = localStorage.getItem('id_token');
+    let token = localStorage.getItem('id_token');
+
+    if(!token){
+                chrome.storage.local.remove(['bearerKey','user','accounts','activeAccount','activeAccountPassword'], () => {
+
+});
+      token= localStorage.getItem('id_token');
+
+    }else{
     chrome.storage.local.set({ bearerKey: token });
-     },1000)
+    }
+   
   },
 });
 
@@ -75,8 +83,9 @@ try {
     }),
   });
 
-  const { data } = await response.json();
+  const { data} = await response.json();
   chrome.storage.local.set({ user: data }); // Store the data that is used in app.jsx
+
 } catch (error) {
   console.error('GraphQL Error:', error);
 }
