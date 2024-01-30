@@ -85,7 +85,7 @@ try {
 
   const { data} = await response.json();
   chrome.storage.local.set({ user: data }); // Store the data that is used in app.jsx
-
+chrome.storage.local.set({accounts:data.me.accounts})
 } catch (error) {
   console.error('GraphQL Error:', error);
 }

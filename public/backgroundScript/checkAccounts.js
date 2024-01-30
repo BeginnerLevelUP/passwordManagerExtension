@@ -10,6 +10,8 @@ export const checkAccounts = async () => {
         if (accounts) {
             // run a loop on all of them
             for (const account of accounts) {
+               const password = await fetchCurrentPassword(account._id);
+                console.log(password)
                 // if the url matches one of the users account it will set to chrome storage as activeAccout
                 const accountUrl = await chrome.tabs.query({ url: account.websiteUrl });
                 const page = accountUrl[0];
@@ -52,53 +54,11 @@ export const handleAccounts=async()=>{
             chrome.scripting.executeScript({
               target: { tabId: url.id },
               function: () => {
-const fetchCurrentPassword = async (accountId) => {
-    const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql';
-    const graphqlQuery = `
-        mutation ShowExternalPassword($accountId: ID!) {
-            showExternalPassword(accountId: $accountId) {
-                _id
-                password {
-                    _id
-                    text
-                }
-            }
-        }
-    `;
 
-    try {
-        const response = await fetch(graphqlEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                query: graphqlQuery,
-                variables: {
-                    accountId,
-                },
-            }),
-        });
-
-        const { data, errors } = await response.json();
-
-        if (errors) {
-            console.error('GraphQL Errors:', errors);
-        }
-
-        console.log('GraphQL Data:', data);
-        return data.showExternalPassword.password.text;
-    } catch (error) {
-        console.error('GraphQL Error:', error);
-        return null;
-    }
-};
 
                 // have to grab from local storage again becasue it is within a different context 
                    chrome.storage.local.get(['activeAccount'], async(result) => {
                           const { activeAccount } = result;
-                         const password=await fetchCurrentPassword(activeAccount._id)
-                          console.log(password)
                                     // Create a button with a unique ID and insert it into the page
                 const uniqueButtonId = 'fillAccount';
                 const existingButton = document.getElementById(uniqueButtonId);
@@ -117,7 +77,7 @@ const fetchCurrentPassword = async (accountId) => {
                   }
 
                   if(input.type==='password'){
-                      input.value=password
+                      input.value='password'
                   } 
 
                   if( input.type==='email'){
@@ -279,3 +239,44 @@ try {
       });
     
 }
+const fetchCurrentPassword = async (accountId) => {
+    const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql';
+    const graphqlQuery = `
+        mutation ShowExternalPassword($accountId: ID!) {
+            showExternalPassword(accountId: $accountId) {
+                _id
+                password {
+                    _id
+                    text
+                }
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch(graphqlEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                query: graphqlQuery,
+                variables: {
+                    accountId,
+                },
+            }),
+        });
+
+        const { data, errors } = await response.json();
+
+        if (errors) {
+            console.error('GraphQL Errors:', errors);
+        }
+
+        console.log('GraphQL Data:', data);
+        return data.showExternalPassword.password.text;
+    } catch (error) {
+        console.error('GraphQL Error:', error);
+        return null;
+    }
+};

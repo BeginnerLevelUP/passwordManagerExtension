@@ -8,14 +8,13 @@ import { checkAccounts,handleAccounts} from "./backgroundScript/checkAccounts.js
 
     chrome.storage.local.get(['bearerKey'], (result) => {
       const { bearerKey } = result;
-    console.log(bearerKey)
       checkLoginStatus(bearerKey);
     });
-
-  }, 1000);
-
     checkAccounts();
     handleAccounts()
+  }, 1000);
+
+
  
 // });
 

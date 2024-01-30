@@ -29,8 +29,7 @@ function App() {
 const profile=currentUser?.me||null
 const username=profile?.username||null
 const accounts=profile?.accounts||null
-// the logged in user accoutns is sent to chrome storage
-chrome.storage.local.set({accounts:accounts})
+
 
 
 
