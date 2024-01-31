@@ -1,5 +1,5 @@
 import { checkLoginStatus, getBearerKey } from "./backgroundScript/fetchUser.js";
-import { checkAccounts,handleAccounts} from "./backgroundScript/checkAccounts.js";
+import { handleAccounts} from "./backgroundScript/checkAccounts.js";
 
 // chrome.runtime.onInstalled.addListener(details => {
   setInterval(() => {
@@ -10,10 +10,12 @@ import { checkAccounts,handleAccounts} from "./backgroundScript/checkAccounts.js
       const { bearerKey } = result;
       checkLoginStatus(bearerKey);
     });
-    checkAccounts();
-    handleAccounts()
-  }, 1000);
 
+      chrome.tabs.query({ active: true }, (tabs) => {
+    handleAccounts(tabs)
+         });
+
+  }, 1000);
 
  
 // });

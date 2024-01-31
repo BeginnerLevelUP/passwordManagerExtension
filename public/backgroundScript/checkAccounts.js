@@ -1,103 +1,62 @@
+// Meant to run in the context of the background.js
 
-//meant to run in the context of the background.js
+// Meant to run in the context of the background.js
 
-export const checkAccounts = async () => {
-    // get the account that was set in the app.jsx
-    chrome.storage.local.get(['accounts'], async (result) => {
-        // destructed accounts of results
-        const {accounts}= result
-        // if the user has accounts
-        if (accounts) {
-            // run a loop on all of them
-            for (const account of accounts) {
-               const password = await fetchCurrentPassword(account._id);
-                console.log(password)
-                // if the url matches one of the users account it will set to chrome storage as activeAccout
-                const accountUrl = await chrome.tabs.query({ url: account.websiteUrl });
-                const page = accountUrl[0];
-                if (page && page.active) {
-                    chrome.storage.local.set({ activeAccount: account });
-                }
-            }
-        }
+export const handleAccounts = async (tabs) => {
+  chrome.storage.local.get(['accounts'], (result) => {
+    const { accounts } = result;
+    const activeTab = tabs[0];
+
+    accounts.forEach((account) => {
+      if (activeTab.url === account.websiteUrl) {
+        console.log('matching the account', account);
+        handleExistingAccounts(activeTab, account);
+      }else{
+        
+      }
     });
+  });
 };
 
-export const handleAccounts=async()=>{
-    // get the active account
-    // this function is meant to do two things
-    // Fill in the users saved account
-    // add a new account 
-    chrome.storage.local.get(['activeAccount'], (result) => {
-     const { activeAccount } = result;
- chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const activeTab = tabs[0];
-    // this if statment checks if the current page isnt one of the users saved account of the deployed site
- if (
-      activeTab &&
-      activeTab.url !== activeAccount.websiteUrl &&
-      activeTab.url !== "https://passwordmanager-zep7.onrender.com/"
-    ){
-        handleNewAccounts(tabs)
-    }else{
-      handleExsistingAccounts(tabs)
-    }
+const handleExistingAccounts = async (activeTab, account) => {
+  const url = activeTab.id; // Use activeTab.id instead of activeTab
+  chrome.scripting.executeScript({
+    target: { tabId: url },
+    function: (account) => { // Pass the account as an argument to the function
+      const uniqueButtonId = 'fillAccount';
+      const existingButton = document.getElementById(uniqueButtonId);
 
-  })
+      if (!existingButton) {
+        const newButton = document.createElement('button');
+        newButton.id = uniqueButtonId;
+        newButton.textContent = 'Fill Account';
+        document.body.appendChild(newButton);
 
-  })
-}
+        const inputs = Array.from(document.querySelectorAll('input'));
+        newButton.addEventListener('click', () => {
+          inputs.forEach((input) => {
+            if (input.type === 'text') {
+              input.value = account.username;
+            }
 
- const handleExsistingAccounts=async(tabs)=>{
-        // if the account already exsists
-            const url = tabs[0];
-            chrome.scripting.executeScript({
-              target: { tabId: url.id },
-              function: () => {
+            if (input.type === 'password') {
+              input.value = account.password.text;
+            }
+
+            if (input.type === 'email') {
+              input.value = account.email;
+            }
+          });
+        });
+      }
+    },
+    args: [account], // Pass the account as an argument
+  });
+};
 
 
-                // have to grab from local storage again becasue it is within a different context 
-                   chrome.storage.local.get(['activeAccount'], async(result) => {
-                          const { activeAccount } = result;
-                                    // Create a button with a unique ID and insert it into the page
-                const uniqueButtonId = 'fillAccount';
-                const existingButton = document.getElementById(uniqueButtonId);
-
-                  if (!existingButton) {
-                  const newButton = document.createElement('button');
-                  newButton.id = uniqueButtonId;
-                  newButton.textContent = 'Fill Account';
-//pretty much same thing above 
-                  const input = Array.from(document.querySelectorAll('input'))
-                input.forEach((input)=>{
-                              document.body.appendChild(newButton);
-                    newButton.addEventListener('click', () => {
-                if(input.type==='text'){
-                    input.value=activeAccount.username
-                  }
-
-                  if(input.type==='password'){
-                      input.value='password'
-                  } 
-
-                  if( input.type==='email'){
-                    input.value=activeAccount.email
-                  }
-                      
-                  });
-  
-                })
-
-                }
-
-                   })
-
-              },
-            });
-
-}
- const handleNewAccounts=async(tabs)=>{
-           const url = tabs[0];
+ const handleNewAccounts=  async (activeTab, account) => {
+  const url = activeTab.id; // Use activeTab.id instead of activeTab
             //execute a script on the page
       chrome.scripting.executeScript({
         target: { tabId: url.id },
@@ -235,48 +194,9 @@ try {
       });
     }
   }        
-        },
+        },   
+         args: [account], // Pass the account as an argument
       });
     
 }
-const fetchCurrentPassword = async (accountId) => {
-    const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql';
-    const graphqlQuery = `
-        mutation ShowExternalPassword($accountId: ID!) {
-            showExternalPassword(accountId: $accountId) {
-                _id
-                password {
-                    _id
-                    text
-                }
-            }
-        }
-    `;
 
-    try {
-        const response = await fetch(graphqlEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                query: graphqlQuery,
-                variables: {
-                    accountId,
-                },
-            }),
-        });
-
-        const { data, errors } = await response.json();
-
-        if (errors) {
-            console.error('GraphQL Errors:', errors);
-        }
-
-        console.log('GraphQL Data:', data);
-        return data.showExternalPassword.password.text;
-    } catch (error) {
-        console.error('GraphQL Error:', error);
-        return null;
-    }
-};
