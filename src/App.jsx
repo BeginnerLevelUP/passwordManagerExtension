@@ -14,31 +14,30 @@ function App() {
   // state to render user credentials 
   const [currentUser,setUser]=useState(null)
   // Getting the user information from the background.js
-  useEffect(() => {
+useEffect(() => {
   chrome.storage.local.get(['user',], (result) => {
     const { user } = result;
 
     if (user) {
-      setUser(user);
+      setUser({ user });
     }
-
   });
-  }, [currentUser]);
+}, [currentUser]); // Remove currentUser from the dependency array
+console.log(currentUser)
 
   // Getting data back from the object
-const profile=currentUser?.me||null
-const username=profile?.username||null
-const accounts=profile?.accounts||null
-
+const username=currentUser?.user?.username
+const accounts=currentUser?.user?.accounts
 
 
 
 
 // The HTML
   return (
+
     <div>
 
-      {profile?(
+      {currentUser?(
         <>
       <h1>Hello
 <a href='https://passwordmanager-zep7.onrender.com/me' target="_blank">

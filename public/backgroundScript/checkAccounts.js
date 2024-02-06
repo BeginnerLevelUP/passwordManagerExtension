@@ -3,26 +3,36 @@
 // Meant to run in the context of the background.js
 
 export const handleAccounts = async (tabs) => {
-  chrome.storage.local.get(['accounts'], (result) => {
-    const { accounts } = result;
-    const activeTab = tabs[0];
-
-    accounts.forEach((account) => {
-      if (activeTab.url === account.websiteUrl) {
-        console.log('matching the account', account);
-        handleExistingAccounts(activeTab, account);
-      }else{
-        
-      }
-    });
+  const result = await new Promise((resolve) => {
+    chrome.storage.local.get(['user'], resolve);
   });
+
+  const accounts = result.user?.accounts;
+  const activeTab = tabs[0];
+
+  if (accounts) {
+    const matchingAccount = accounts.find((account) => activeTab.url === account.websiteUrl);
+
+    if (matchingAccount) {
+      console.log('Matching the account', matchingAccount);
+      handleExistingAccounts(activeTab, matchingAccount);
+    } else {
+      // Check if the active tab's URL is the excluded URL
+      if (activeTab.url !== 'https://passwordmanager-zep7.onrender.com/') {
+        console.log('No matching account found. Handling new account.');
+        handleNewAccounts(activeTab);
+      } else {
+        console.log('Excluded URL. Not handling a new account.');
+      }
+    }
+  }
 };
 
 const handleExistingAccounts = async (activeTab, account) => {
-  const url = activeTab.id; // Use activeTab.id instead of activeTab
-  chrome.scripting.executeScript({
+  const url = activeTab.id;
+  await chrome.scripting.executeScript({
     target: { tabId: url },
-    function: (account) => { // Pass the account as an argument to the function
+    function: (account) => {
       const uniqueButtonId = 'fillAccount';
       const existingButton = document.getElementById(uniqueButtonId);
 
@@ -41,6 +51,7 @@ const handleExistingAccounts = async (activeTab, account) => {
 
             if (input.type === 'password') {
               input.value = account.password.text;
+              console.log(input.value)
             }
 
             if (input.type === 'email') {
@@ -50,16 +61,16 @@ const handleExistingAccounts = async (activeTab, account) => {
         });
       }
     },
-    args: [account], // Pass the account as an argument
+    args: [account],
   });
 };
 
 
- const handleNewAccounts=  async (activeTab, account) => {
+ const handleNewAccounts=  async (activeTab) => {
   const url = activeTab.id; // Use activeTab.id instead of activeTab
             //execute a script on the page
       chrome.scripting.executeScript({
-        target: { tabId: url.id },
+        target: { tabId: url },
         function: () => {
             // created a form becasue i didnt find a away to open the pop up with js seems like the user has to manually click
     // Form
@@ -195,7 +206,6 @@ try {
     }
   }        
         },   
-         args: [account], // Pass the account as an argument
       });
     
 }
