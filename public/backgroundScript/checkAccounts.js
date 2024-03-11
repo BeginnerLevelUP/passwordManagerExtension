@@ -123,14 +123,18 @@ document.head.appendChild(styleElement);
     const submitButton = document.createElement('button');
     submitButton.type = 'submit';
     submitButton.textContent = 'Submit';
-
+    
+    //Create Generate Button
+      const generateButton=document.createElement('button')
+      generateButton.id='generate'
+      generateButton.textContent='Generate Password'
     // Append all elements to the form
     form.appendChild(usernameInput);
     form.appendChild(emailInput);
     form.appendChild(passwordInput);
     form.appendChild(textarea);
     form.appendChild(submitButton);
-    
+    form.appendChild(generateButton)
             // Creates the button 
   const uniqueButtonId = 'fillAccount';
   const existingButton = document.getElementById(uniqueButtonId);
@@ -172,7 +176,7 @@ const buttonStyles = `
     border-radius:8px
   }
 
-  #form button {
+  #form button ,#generate{
   color:white;
   border-radius: 8px;
   border: 1px solid transparent;
@@ -180,9 +184,14 @@ const buttonStyles = `
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color:#670A0A;
   cursor: pointer;
   transition: border-color 0.25s;
+}
+#form button{
+    background-color:#670A0A;
+}
+#generate {
+background-color:#50C878 !important
 }
 `;
 
@@ -194,7 +203,7 @@ document.head.appendChild(styleElement);
       const newButton = document.createElement('button');
       newButton.id = uniqueButtonId;
       newButton.textContent = 'Add Account';
-
+    
       document.body.appendChild(newButton);
 
       newButton.addEventListener('click', () => {
