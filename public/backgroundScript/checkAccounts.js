@@ -1,6 +1,5 @@
 // Meant to run in the context of the background.js
 
-// Meant to run in the context of the background.js
 
 export const handleAccounts = async (tabs) => {
   const result = await new Promise((resolve) => {
@@ -46,7 +45,7 @@ const buttonStyles = `
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    position:absolute;
+
   }
 
   #${uniqueButtonId}:hover {
@@ -62,7 +61,7 @@ document.head.appendChild(styleElement);
         const newButton = document.createElement('button');
         newButton.id = uniqueButtonId;
         newButton.textContent = 'Fill Account';
-        document.body.appendChild(newButton);
+
 
         const inputs = Array.from(document.querySelectorAll('input'));
         newButton.addEventListener('click', () => {
@@ -81,6 +80,15 @@ document.head.appendChild(styleElement);
             }
           });
         });
+
+  const loginButtons = document.querySelectorAll('button'); // Select all buttons
+loginButtons.forEach(button => {
+  const buttonText = button.textContent.toLowerCase();
+  if (buttonText === 'sign in' || buttonText === 'log in') {
+    button.parentNode.appendChild(newButton)
+    console.log('Found Sign In or Log In button:', button);
+  }
+});
       }
     },
     args: [account],
@@ -94,7 +102,9 @@ document.head.appendChild(styleElement);
       chrome.scripting.executeScript({
         target: { tabId: url },
         function: () => {
-            // created a form becasue i didnt find a away to open the pop up with js seems like the user has to manually click
+              chrome.storage.local.get(['user'], (result) => {
+      const { user } = result;
+                    // created a form becasue i didnt find a away to open the pop up with js seems like the user has to manually click
     // Form
        const form = document.createElement('form');
        form.id='form'
@@ -128,6 +138,9 @@ document.head.appendChild(styleElement);
       const generateButton=document.createElement('button')
       generateButton.id='generate'
       generateButton.textContent='Generate Password'
+      generateButton.addEventListener('click',()=>{
+     window.open('https://passwordmanager-zep7.onrender.com/', '_blank');
+      })
     // Append all elements to the form
     form.appendChild(usernameInput);
     form.appendChild(emailInput);
@@ -153,7 +166,6 @@ const buttonStyles = `
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    position:absolute;
   }
 
   #${uniqueButtonId}:hover {
@@ -161,7 +173,6 @@ const buttonStyles = `
   }
 
   #form{
-    position:absolute;
     left:15%;
     border:2px solid #F08080;
     border-radius:8px;
@@ -203,7 +214,6 @@ document.head.appendChild(styleElement);
       const newButton = document.createElement('button');
       newButton.id = uniqueButtonId;
       newButton.textContent = 'Add Account';
-    
       document.body.appendChild(newButton);
 
       newButton.addEventListener('click', () => {
@@ -221,24 +231,21 @@ document.head.appendChild(styleElement);
             emailInput.value= inputElement.value
           }
         });
-    //form appears on page after click 
-    document.body.appendChild(form);
 
+    newButton.parentNode.appendChild(form)
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   // Collect input values into a newAccountObject
   const variables = {
     // needs to be dynamic 
-    currentUsername:'johnWade',
+    currentUsername:user.username,
     websiteUrl: window.location.href,
     username: usernameInput.value,
     passwordText: passwordInput.value,
     email: emailInput.value,
     notes: textarea.value,
   };
-
-
   const graphqlEndpoint = 'https://passwordmanager-zep7.onrender.com/graphql';
   // graphql shcema to addAccount
   const graphqlQuery =`
@@ -286,8 +293,17 @@ try {
 });
 
       });
+
+        const loginButtons = document.querySelectorAll('button'); // Select all buttons
+loginButtons.forEach(button => {
+  const buttonText = button.textContent.toLowerCase();
+  if (buttonText === 'sign in' || buttonText === 'log in') {
+    button.parentNode.appendChild(newButton)
+  }})
     }
-  }        
+  }      
+    });
+       
         },   
       });
     
