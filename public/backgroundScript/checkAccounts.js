@@ -37,6 +37,28 @@ const handleExistingAccounts = async (activeTab, account) => {
       const existingButton = document.getElementById(uniqueButtonId);
 
       if (!existingButton) {
+        // Add CSS styles
+const buttonStyles = `
+  #${uniqueButtonId} {
+    background-color: #DC143C;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    position:absolute;
+  }
+
+  #${uniqueButtonId}:hover {
+    background-color: #FF6347;
+  }
+`;
+
+// Create a <style> element and add the styles
+const styleElement = document.createElement('style');
+styleElement.textContent = buttonStyles;
+document.head.appendChild(styleElement);
+
         const newButton = document.createElement('button');
         newButton.id = uniqueButtonId;
         newButton.textContent = 'Fill Account';
@@ -75,6 +97,7 @@ const handleExistingAccounts = async (activeTab, account) => {
             // created a form becasue i didnt find a away to open the pop up with js seems like the user has to manually click
     // Form
        const form = document.createElement('form');
+       form.id='form'
        // the form has everything except for websiteUrl because the url seems kinda of obvious lol
 
     // Create input for username
@@ -117,6 +140,57 @@ const handleExistingAccounts = async (activeTab, account) => {
   if (input.length > 0) {
         // stops the code from rendering 50 million buttons becasue of the intervale
     if (!existingButton) {
+              // Add CSS styles
+const buttonStyles = `
+  #${uniqueButtonId} {
+    background-color: #DC143C;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    position:absolute;
+  }
+
+  #${uniqueButtonId}:hover {
+    background-color: #FF6347;
+  }
+
+  #form{
+    position:absolute;
+    left:15%;
+    border:2px solid #F08080;
+    border-radius:8px;
+    background-color:#FF3366;
+    padding:2%;
+    display:flex;
+    flex-direction:column;
+  }
+
+  #form input,#form textarea,#form button{
+    margin:2% 0;
+    border-radius:8px
+  }
+
+  #form button {
+  color:white;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color:#670A0A;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+`;
+
+// Create a <style> element and add the styles
+const styleElement = document.createElement('style');
+styleElement.textContent = buttonStyles;
+document.head.appendChild(styleElement);
+
       const newButton = document.createElement('button');
       newButton.id = uniqueButtonId;
       newButton.textContent = 'Add Account';
