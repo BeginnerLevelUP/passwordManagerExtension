@@ -1,8 +1,39 @@
-# React + Vite
+# Password Manager Extension
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A chrome extension for [Password Manager ](https://github.com/BeginnerLevelUP/passwordManager)
 
-Currently, two official plugins are available:
+## Features
+* Gets information from your account automatically
+* Takes you to your saved password/account with a simply click
+* If a password/account is saved you can simply click 'Fill Account'
+* If you're on a new page where created an account is needed you can add that account to your profile
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Images
+![Popup.html](./readMeImages/popupHTML.png)
+![FillAccountButton](./readMeImages/fillAccount.png)
+![AddAccountButton1](./readMeImages/addAccount1.png)
+![AddAccountButton2](./readMeImages//addAccount2.png)
+### Installing
+Stop by the chrome webstore for the [Password Manager]()
+*Currently Pending Review By Google*
+
+## Help
+Since I created this project on my own and my first time ever building a chrome exetenison I'm sure there's alot of bugs and features I could add in the future 
+
+## Authors
+
+Contributors names and contact info
+
+[Damion Morgan](https://github.com/BeginnerLevelUP)
+
+
+## Version History
+
+
+* 0.1
+    * Initial Release
+
+## License
+
+This project has no license 
+
