@@ -11,12 +11,10 @@
     "default_popup": "index.html"
   },
   "permissions": [
-    "notifications",
     "storage",
     "scripting",
     "tabs",
-    "activeTab",
-    "alarms"
+    "activeTab"
   ],
   "host_permissions": [
     "http://*/*",
